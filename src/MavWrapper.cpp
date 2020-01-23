@@ -22,37 +22,39 @@ MavWrapper::MavWrapper():nh("~"){
     nh.param<double>("init_timeout",time_out,2.0);
     mav_init_timeout = ros::Duration(time_out);        
 
+
+    nh = ros::NodeHandle();
     // ros comm 
-    sub_control_pose = nh.subscribe("/mav_wrapper/setpoint_planning",1,&MavWrapper::cb_setpoint,this);
-    sub_mavros_pose = nh.subscribe("/mavros/local_position/pose",1,&MavWrapper::cb_mavros_local_pose,this);
+    sub_control_pose = nh.subscribe("mav_wrapper/setpoint_planning",1,&MavWrapper::cb_setpoint,this);
+    sub_mavros_pose = nh.subscribe("mavros/local_position/pose",1,&MavWrapper::cb_mavros_local_pose,this);
 
     if(is_pose){
         sub_ext_pose = nh.subscribe(ext_pose_topic,1,&MavWrapper::cb_ext_pose,this);
-        pub_cur_pose = nh.advertise<geometry_msgs::PoseStamped>("/mavros/vision_pose/pose",10);
+        pub_cur_pose = nh.advertise<geometry_msgs::PoseStamped>("mavros/vision_pose/pose",10);
     }
     
     if(is_cov){
         sub_ext_pose_cov = nh.subscribe(ext_pose_cov_topic,1,&MavWrapper::cb_ext_pose_cov,this);
-        pub_cur_pose_cov = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/mavros/vision_pose/pose_cov",10);
+        pub_cur_pose_cov = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("mavros/vision_pose/pose_cov",10);
     }
 
     if(is_odom){
         sub_ext_pose_cov = nh.subscribe(ext_odom_topic,1,&MavWrapper::cb_ext_odom,this);
-        pub_cur_pose = nh.advertise<geometry_msgs::PoseStamped>("/mavros/vision_pose/pose",10);
+        pub_cur_pose = nh.advertise<geometry_msgs::PoseStamped>("mavros/vision_pose/pose",10);
     }
         
     
 
 
     clock_server = nh.advertise<rosgraph_msgs::Clock>("/clock",1);
-    sub_state =nh.subscribe("/mavros/state", 10, &MavWrapper::cb_state,this);
-    pub_setpoint = nh.advertise<geometry_msgs::PoseStamped>("/mavros/setpoint_position/local", 10);    
+    sub_state =nh.subscribe("mavros/state", 10, &MavWrapper::cb_state,this);
+    pub_setpoint = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
     
 
 
-    server_init_home = nh.advertiseService("/mav_wrapper/init_home",&MavWrapper::init_home_callback,this);        
-    server_key_input = nh.advertiseService("/mav_wrapper/keyboard_in",&MavWrapper::keyboard_callback,this);
-    server_switch_mode = nh.advertiseService("/mav_wrapper/swtich_mode",&MavWrapper::swtich_mode_callback,this);    
+    server_init_home = nh.advertiseService("mav_wrapper/init_home",&MavWrapper::init_home_callback,this);
+    server_key_input = nh.advertiseService("mav_wrapper/keyboard_in",&MavWrapper::keyboard_callback,this);
+    server_switch_mode = nh.advertiseService("mav_wrapper/swtich_mode",&MavWrapper::swtich_mode_callback,this);
 
     ROS_WARN("[Mav Wrapper] Do not fly until external pose is provided.");
 }

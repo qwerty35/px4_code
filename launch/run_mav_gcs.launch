@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <arg name="display" default = "true"/>
+
+    <!--mav gcs-->
+    <node name="mav_gcs_node" pkg="px4_code" type="mav_gcs_node">
+        <param name="planner_node_name" value="/planner_client"/>         
+    </node>
+
+    <!--rviz-->
+    <node if ="$(arg display)" name="rviz" pkg="rviz" type="rviz" args="-d $(find px4_code)/rviz/rviz.rviz"/>
+
+</launch>
